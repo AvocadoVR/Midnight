@@ -68,6 +68,6 @@ class VRCListener:
 
             channel = self.bot.get_channel(self.channel_id)
 
-            view = RequestResponseButtons(senderId=senderId)
+            view = RequestResponseButtons(senderName=sender, senderId=senderId)
 
             await channel.send(embed=embed, view=view)
