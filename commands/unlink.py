@@ -39,7 +39,7 @@ class Unlink(commands.Cog):
             formatted_date = isVerifiedUser.change_account.strftime("%A, %B %d, %Y")
             await interaction.followup.send(
                 f"Your account is on cooldown. You can change it again on **{formatted_date}**. "
-                f"If this is an emergency, please DM or mention a mod.",
+                f"If you have a valid reason for needing to change accounts, please @ a administrator.",
                 ephemeral=True
             )
             return
