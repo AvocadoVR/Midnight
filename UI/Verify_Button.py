@@ -22,16 +22,19 @@ class VerifyButton(discord.ui.View):
 
         user = await get_user_by_id(vrchatId=vrchatId)
 
+        isAgeVerified = getattr(user, "age_verified", None)
+        bio = getattr(user, "bio", None)
+
         if user is None:
             await interaction.response.send_message("Invalid VRChat Profile!", ephemeral=True)
             return
 
-        isBio = verification.code in user.bio
+        isBio = verification.code in bio
 
-        if not isBio and not user.isAgeVerified:
+        if not isBio and not isAgeVerified:
             await interaction.response.send_message("There was no code found. You're also not age verified!", ephemeral=True)
             return
-        elif not user.isAgeVerified:
+        elif not isAgeVerified:
             await interaction.response.send_message("You're not age verified!", ephemeral=True)
             return
         elif not isBio:
