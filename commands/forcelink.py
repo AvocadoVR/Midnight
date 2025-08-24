@@ -39,11 +39,13 @@ class Forcelink(commands.Cog):
 
         user = await get_user_by_id(vrchatId=vrchatId)
 
+        isAgeVerified = getattr(user, "age_verified", None)
+
         if user is None:
             await interaction.followup.send("Invalid VRChat Profile!", ephemeral=True)
             return
 
-        if user.isAgeVerified:
+        if isAgeVerified:
             await interaction.followup.send(f"VRChat account successfully linked to {discord_member.mention}!", ephemeral=True)
             await add_verified_user(discordId=discordId, vrchatId=vrchatId)
         else:
