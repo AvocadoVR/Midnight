@@ -1,0 +1,9 @@
+.idea
+/workedOnCommands
+/auth/cookie.json
+/auth/MidnightBotCodes.txt
+/api/group_event.txt
+bot.log
+MidnightBotV2.zip
+
+.env
