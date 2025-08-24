@@ -1,9 +1,9 @@
 import datetime
-from enum import Enum
+import enum
 from typing import List, Optional
 import aiomysql
 
-from sqlmodel import SQLModel, Field, select
+from sqlmodel import SQLModel, Field, select, Enum
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy import delete, Column, BIGINT, BigInteger
 
@@ -11,7 +11,6 @@ from sqlalchemy import delete, Column, BIGINT, BigInteger
 DATABASE_URL = "mysql+aiomysql://u185315_XCxGOyxbwo:HWnQGDDK5HZLpsb20=g7dx.n@db-dtx-03.sparkedhost.us:3306/s185315_DatabaseV2"
 
 async_engine = create_async_engine(DATABASE_URL, echo=False)
-
 
 # ---------- Models ----------
 
@@ -33,16 +32,6 @@ class SyncedEvent(SQLModel, table=True):
     )
     vrchatEventId: int
 
-
-class Invite(SQLModel, table=True):
-    discordId: int = Field(
-        default=None,
-        sa_column=Column(BigInteger, primary_key=True)
-    )
-    vrchatId: str
-    requestedAt: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
-
-
 class PendingVerification(SQLModel, table=True):
     discordId: int = Field(
         default=None,
@@ -63,13 +52,6 @@ async def setup_db():
 
 
 # ---------- Create ----------
-async def create_invite(discordId: int, vrchatId: str):
-    invite = Invite(discordId=discordId, vrchatId=vrchatId)
-    async with AsyncSession(async_engine) as session:
-        session.add(invite)
-        await session.commit()
-        await session.refresh(invite)
-
 
 async def add_verified_user(discordId: int, vrchatId: str):
     verified_user = VerifiedUser(discordId=discordId, vrchatId=vrchatId)
@@ -95,17 +77,6 @@ async def add_synced_event(id: int):
 
 
 # ---------- Get ----------
-async def get_invite(discordId: int) -> Optional[Invite]:
-    async with AsyncSession(async_engine) as session:
-        result = await session.execute(select(Invite).where(Invite.discordId == discordId))
-        return result.scalars().first()
-
-
-async def get_invite_list() -> List[Invite]:
-    async with AsyncSession(async_engine) as session:
-        result = await session.execute(select(Invite).order_by(Invite.id))
-        return result.scalars().all()
-
 
 async def get_verified_user(discordId: int) -> Optional[VerifiedUser]:
     async with AsyncSession(async_engine) as session:
@@ -126,11 +97,6 @@ async def get_scheduled_events() -> List[SyncedEvent]:
         return result.scalars().all()
 
 # ---------- Remove ----------
-async def remove_invite(discordId: int):
-    async with AsyncSession(async_engine) as session:
-        await session.execute(delete(Invite).where(Invite.discordId == discordId))
-        await session.commit()
-
 
 async def remove_verified_user(discordId: int):
     async with AsyncSession(async_engine) as session:
@@ -146,11 +112,10 @@ async def remove_pending_verification(discordId: int):
 
 async def remove_expired_verifications():
     async with AsyncSession(async_engine) as session:
-        await session.execute(
+        result = await session.execute(
             delete(PendingVerification).where(PendingVerification.expires < datetime.datetime.utcnow())
         )
         await session.commit()
-    print("Removed Expired Verifications")
 
 async def remove_synced_event(discordEventId: int, vrchatEventId: int):
     async with AsyncSession(async_engine) as session:

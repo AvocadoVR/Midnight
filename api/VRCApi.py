@@ -89,15 +89,6 @@ async def get_user_by_id(vrchatId: str):
         print(f"Unexpected error: {e}")
         return None
 
-async def invite_to_group(vrchatId: str):
-    try:
-        invite_request = CreateGroupInviteRequest(vrchatId)
-
-        group_api.create_group_invite(Group_ID, invite_request)
-    except (UnauthorizedException, NotFoundException) as e:
-        print(f"Unauthorized: {e}")
-
-
 # https://vrchat.community/openapi/respond-group-join-request
 
 async def group_request_response(vrchatId: str, isAccepted: bool) -> bool:
