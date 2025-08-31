@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands, tasks
@@ -22,6 +22,11 @@ BOT_TOKEN = os.getenv('TOKEN')
 WS_URL = os.getenv('WS_URL')
 CHANNEL = int(os.getenv('GROUP_REQUEST_CHANNEL'))
 
+
+LOG_DIR = "logs"
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
 log_filename = datetime.now().strftime("logs/bot_%Y-%m-%d.log")
 
 handler = logging.FileHandler(filename=log_filename, encoding="utf-8", mode="a")
@@ -31,14 +36,6 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[handler]
 )
-
-intents = discord.Intents.all()
-intents.message_content = True
-intents.members = True
-
-LOG_DIR = "logs"
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
 
 def cleanup_old_logs(days=5):
     today = datetime.now().date()  # only the date
@@ -53,6 +50,9 @@ def cleanup_old_logs(days=5):
                 except Exception as e:
                     print(f"Failed to delete {file}: {e}")
 
+intents = discord.Intents.all()
+intents.message_content = True
+intents.members = True
 
 
 class Midnight(commands.Bot):
