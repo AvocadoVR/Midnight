@@ -10,7 +10,7 @@ import os
 
 from dotenv import load_dotenv
 
-from Database import setup_db, remove_expired_verifications
+from Database import setup_db, get_verified_user, remove_verified_user, remove_expired_verifications
 
 from api.VRCListener import VRCListener
 from auth.VRCSLCookie import get_auth_cookie
@@ -85,11 +85,34 @@ class Midnight(commands.Bot):
         else:
             print("Listener failed.")
 
+        await self.change_presence(status=discord.Status.online, activity=discord.Game(name="Doing gay things"))
 
         self.check_expired_loop.start()
         #self.tick_invite_worker.start()
 
         print(f"{self.user} has connected to Discord!")
+
+    async def on_member_remove(self, member: discord.Member):
+        userId = member.id
+
+        try:
+            isVerifiedMember = await get_verified_user(userId)
+
+            if isVerifiedMember:
+                await remove_verified_user(userId)
+        except Exception as e:
+            print(e)
+
+    async def on_member_ban(self, guild: discord.Guild, member: discord.Member):
+        userId = member.id
+
+        try:
+            isVerifiedMember = await get_verified_user(userId)
+
+            if isVerifiedMember:
+                await remove_verified_user(userId)
+        except Exception as e:
+            print(e)
 
 
     @tasks.loop(seconds=30)

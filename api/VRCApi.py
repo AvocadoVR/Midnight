@@ -8,7 +8,7 @@ import os
 
 from vrchatapi import TwoFactorAuthCode, UsersApi, GroupsApi, RespondGroupJoinRequest, \
     CreateGroupInviteRequest, ApiException, CalendarEvent, CalendarApi
-from vrchatapi.api import authentication_api
+from vrchatapi.api import authentication_api, groups_api
 from vrchatapi.exceptions import UnauthorizedException, NotFoundException
 
 from auth.VRCSLCookie import load_cookies, save_cookies
@@ -102,6 +102,18 @@ async def group_request_response(vrchatId: str, isAccepted: bool) -> bool:
     except ApiException as e:
         print(e)
         return False
+
+
+# https://vrchat.community/openapi/get-group-requests
+
+async def get_pending_invites():
+    try:
+        pendingInvites = group_api.get_group_requests(Group_ID)
+
+        return pendingInvites
+    except ApiException as e:
+        print(e)
+        return None
 
 async def get_vrchat_events() -> List[bool] | None:
     try:
