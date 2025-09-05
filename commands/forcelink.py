@@ -6,6 +6,8 @@ from Database import get_pending_verification, get_verified_user, remove_pending
     remove_verified_user
 from api.VRCApi import get_user_by_id
 
+VERIFIED_ROLE = os.getenv('VERIFIED_ROLE')
+
 class Forcelink(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -48,6 +50,10 @@ class Forcelink(commands.Cog):
         if isAgeVerified:
             await interaction.followup.send(f"VRChat account successfully linked to {discord_member.mention}!", ephemeral=True)
             await add_verified_user(discordId=discordId, vrchatId=vrchatId)
+
+            role = interaction.guild.get_role(int(VERIFIED_ROLE))
+
+            await interaction.user.add_roles(role)
         else:
             await interaction.followup.send("They are not age verified on VRChat.", ephemeral=True)
 
