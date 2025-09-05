@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import os
 
 from Database import get_pending_verification, get_verified_user, remove_pending_verification, add_verified_user, \
     remove_verified_user

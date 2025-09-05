@@ -57,7 +57,7 @@ intents.members = True
 
 class Midnight(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=intents)
+        super().__init__(command_prefix=None, intents=intents)
 
     async def setup_hook(self):
         cleanup_old_logs()
